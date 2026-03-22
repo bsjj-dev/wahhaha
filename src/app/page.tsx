@@ -29,6 +29,7 @@ export default function Home() {
 
   // UI state
   const [menuOpen, setMenuOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [staffNotifications, setStaffNotifications] = useState<StaffNotification[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -372,8 +373,6 @@ export default function Home() {
   if (!joined) {
     return <Lobby onJoin={joinRoom} />;
   }
-
-  const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <div className="h-screen flex relative overflow-hidden">
