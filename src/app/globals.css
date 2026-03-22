@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  --wah-gold: #d4a843;
+  --wah-yellow: #ffff00;
+  --wah-red: #dd3333;
+  --wah-dark-red: #8b0000;
+  --wah-dark: #1a0f0a;
+  --wah-wood: #3d2417;
+  --wah-cream: #f5e6c8;
+  --wah-tan: #e6d3c3;
+  --wah-green: #2d5a3d;
+  --wah-nav: rgba(29, 29, 29, 0.9);
+}
+
+body {
+  background: var(--wah-dark);
+  color: var(--wah-cream);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--wah-dark); }
+::-webkit-scrollbar-thumb { background: var(--wah-wood); border-radius: 3px; }
+
+/* Seat video - used in lobby preview */
+.seat-video {
+  border: 3px solid var(--wah-gold);
+  border-radius: 50%;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--wah-wood);
+}
+.seat-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.chat-message { animation: slideIn 0.2s ease-out; }
+
+@keyframes serveFood {
+  0% { opacity: 0; transform: scale(0.5) translateY(-20px); }
+  60% { transform: scale(1.1) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.food-serve { animation: serveFood 0.6s ease-out; }
+
+.menu-item { transition: all 0.2s ease; }
+.menu-item:hover {
+  background: rgba(212, 168, 67, 0.1);
+  transform: translateX(4px);
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+.neon-text {
+  animation: flicker 4s infinite;
+  text-shadow: 0 0 10px rgba(212, 168, 67, 0.8), 0 0 20px rgba(212, 168, 67, 0.4), 0 0 40px rgba(212, 168, 67, 0.2);
+}
