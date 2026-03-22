@@ -166,7 +166,14 @@ export default function Home() {
     ws: WebSocket,
   ): RTCPeerConnection => {
     const pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:stun2.l.google.com:19302" },
+      ],
+      // Always gather local (host) candidates so LAN connections work
+      // even when STUN is unreachable or returns unhelpful public IPs
+      iceCandidatePoolSize: 10,
     });
 
     if (localStream) {
@@ -366,8 +373,10 @@ export default function Home() {
     return <Lobby onJoin={joinRoom} />;
   }
 
+  const [chatOpen, setChatOpen] = useState(false);
+
   return (
-    <div className="h-screen flex">
+    <div className="h-screen flex relative overflow-hidden">
       {/* Main area - table */}
       <div className="flex-1 relative">
         {/* Room header */}
@@ -411,10 +420,33 @@ export default function Home() {
         )}
       </div>
 
-      {/* Chat sidebar */}
-      <div className="w-72 lg:w-80 shrink-0">
+      {/* Chat sidebar — hidden on mobile, visible on md+ */}
+      <div className="hidden md:block w-72 lg:w-80 shrink-0">
         <Chat messages={chatMessages} onSend={handleSendChat} currentUser={userName} />
       </div>
+
+      {/* Mobile chat toggle button */}
+      <button
+        className="md:hidden absolute bottom-20 right-4 z-30 w-12 h-12 rounded-full bg-[var(--wah-dark)]/90 border border-[var(--wah-wood)] flex items-center justify-center text-xl"
+        onClick={() => setChatOpen((o) => !o)}
+      >
+        💬
+        {chatMessages.length > 0 && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--wah-red)] text-[8px] flex items-center justify-center text-white font-bold">
+            {chatMessages.length > 9 ? "9+" : chatMessages.length}
+          </span>
+        )}
+      </button>
+
+      {/* Mobile chat drawer */}
+      {chatOpen && (
+        <div className="md:hidden absolute inset-0 z-40 flex flex-col">
+          <div className="flex-1 bg-black/40" onClick={() => setChatOpen(false)} />
+          <div className="h-[60%] bg-[var(--wah-dark)]">
+            <Chat messages={chatMessages} onSend={handleSendChat} currentUser={userName} />
+          </div>
+        </div>
+      )}
 
       {/* Menu overlay */}
       <Menu isOpen={menuOpen} onOrder={handleOrder} onClose={() => setMenuOpen(false)} />

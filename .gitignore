@@ -28,3 +28,9 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude / local memory
+.claude/
+memory/
+
+certificates
