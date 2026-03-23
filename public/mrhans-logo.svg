@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100" viewBox="0 0 300 100">
+  <rect width="300" height="100" fill="#0a0505"/>
+  <text x="150" y="45" text-anchor="middle" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#ed0606">MR. HAN'S</text>
+  <text x="150" y="70" text-anchor="middle" font-family="Georgia, serif" font-size="12" letter-spacing="4" fill="#c9a44a">SUPPER CLUB</text>
+  <text x="150" y="88" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="#c9a44a" opacity="0.5">EST. 1975</text>
+</svg>

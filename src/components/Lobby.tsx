@@ -5,9 +5,23 @@ import Image from "next/image";
 
 interface LobbyProps {
   onJoin: (name: string, roomCode: string) => void;
+  locationName?: string;
+  locationSubtitle?: string;
+  locationDescription?: string;
+  locationLogo?: string;
+  locationAddress?: string;
+  accentColor?: string;
 }
 
-export default function Lobby({ onJoin }: LobbyProps) {
+export default function Lobby({
+  onJoin,
+  locationName = "Wah Ha Ha",
+  locationSubtitle = "The Back Room",
+  locationDescription = "The back room is ready. Your table awaits.",
+  locationLogo = "/logo.png",
+  locationAddress = "Thai Cuisine \u2022 Gainesville, FL",
+  accentColor = "var(--wah-gold)",
+}: LobbyProps) {
   const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
   const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
@@ -48,15 +62,15 @@ export default function Lobby({ onJoin }: LobbyProps) {
         {/* Logo / Header */}
         <div className="text-center mb-8">
           <Image
-            src="/logo.png"
-            alt="Wah Ha Ha Thai Food"
-            width={300}
-            height={100}
-            className="mx-auto mb-3"
+            src={locationLogo}
+            alt={locationName}
+            width={120}
+            height={120}
+            className="mx-auto mb-3 object-contain max-h-24"
           />
-          <p className="text-white/50 text-sm">Thai Cuisine &bull; Gainesville, FL</p>
+          <p className="text-white/50 text-sm">{locationAddress}</p>
           <div className="mt-4 text-white/30 text-xs italic">
-            &ldquo;The back room is ready. Your table awaits.&rdquo;
+            &ldquo;{locationDescription}&rdquo;
           </div>
         </div>
 
@@ -76,7 +90,7 @@ export default function Lobby({ onJoin }: LobbyProps) {
         {/* Join form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs text-[var(--wah-gold)] mb-1.5 font-semibold">
+            <label className="block text-xs mb-1.5 font-semibold" style={{ color: accentColor }}>
               Your Name
             </label>
             <input
@@ -89,7 +103,7 @@ export default function Lobby({ onJoin }: LobbyProps) {
             />
           </div>
           <div>
-            <label className="block text-xs text-[var(--wah-gold)] mb-1.5 font-semibold">
+            <label className="block text-xs mb-1.5 font-semibold" style={{ color: accentColor }}>
               Room Code
             </label>
             <input

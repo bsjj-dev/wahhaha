@@ -3,15 +3,19 @@ import { WebSocketServer } from "ws";
 
 const PORT = process.env.PORT || 8080;
 
-// HTTP server — handles plain browser requests gracefully
+// HTTP server — handles plain browser requests and health checks
 const server = createServer((req, res) => {
-  const rooms = wss.__rooms;
-  const totalPeers = rooms
-    ? [...rooms.values()].reduce((sum, r) => sum + r.size, 0)
-    : 0;
-  const roomList = rooms
-    ? [...rooms.entries()].map(([name, peers]) => `  ${name}: ${peers.size} at the table`).join("\n")
-    : "";
+  // Health check for Render
+  if (req.url === "/health") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "ok" }));
+    return;
+  }
+
+  const totalPeers = [...rooms.values()].reduce((sum, r) => sum + r.size, 0);
+  const roomList = [...rooms.entries()]
+    .map(([name, peers]) => `  ${name}: ${peers.size} at the table`)
+    .join("\n");
 
   res.writeHead(200, { "Content-Type": "text/plain" });
   res.end(
@@ -19,8 +23,7 @@ const server = createServer((req, res) => {
     `==========================\n` +
     `Status: running\n` +
     `Peers connected: ${totalPeers}\n` +
-    (roomList ? `\nRooms:\n${roomList}\n` : `\nNo active rooms.\n`) +
-    `\nConnect via WebSocket: ws://localhost:${PORT}\n`
+    (roomList ? `\nRooms:\n${roomList}\n` : `\nNo active rooms.\n`)
   );
 });
 
@@ -28,7 +31,6 @@ const wss = new WebSocketServer({ server });
 
 // room -> Map<peerId, { ws, name, isAlive }>
 const rooms = new Map();
-wss.__rooms = rooms;
 let nextId = 1;
 
 wss.on("connection", (ws) => {
@@ -55,14 +57,14 @@ wss.on("connection", (ws) => {
         if (!rooms.has(roomName)) rooms.set(roomName, new Map());
         const room = rooms.get(roomName);
 
-        // Tell existing peers about the new joiner
+        // Tell existing peers about the new joiner (they create offers)
         for (const [, existing] of room) {
           safeSend(existing.ws, { type: "peer-joined", peerId, name: peerName });
         }
 
-        // Tell the joiner about existing peers
+        // Tell the joiner about existing peers (they wait for offers)
         for (const [existingId, existing] of room) {
-          safeSend(ws, { type: "peer-joined", peerId: existingId, name: existing.name });
+          safeSend(ws, { type: "peer-existing", peerId: existingId, name: existing.name });
         }
 
         room.set(peerId, { ws, name: peerName, isAlive: true });
@@ -136,6 +138,6 @@ function safeSend(ws, data) {
   }
 }
 
-server.listen(PORT, () => {
-  console.log(`Wah Ha Ha signaling server running on http/ws://localhost:${PORT}`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Wah Ha Ha signaling server running on port ${PORT}`);
 });

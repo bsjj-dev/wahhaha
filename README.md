@@ -76,17 +76,31 @@ Share the `https://` ngrok URL. Update `NEXT_PUBLIC_SIGNALING_URL` in `.env.loca
 
 ---
 
+## Deploy (Vercel + Render)
+
+### 1. Signaling server → Render
+
+1. Push the repo to GitHub
+2. Go to [render.com](https://render.com), create a **New Web Service** from the repo
+3. Render auto-detects `render.yaml` — it will deploy `signaling-server.js`
+4. Note the URL (e.g. `https://wahhaha-signaling.onrender.com`)
+
+### 2. Frontend → Vercel
+
+1. Import the repo on [vercel.com](https://vercel.com)
+2. Add the environment variable:
+   - `NEXT_PUBLIC_SIGNALING_URL` = `wss://wahhaha-signaling.onrender.com` (your Render URL, with `wss://`)
+3. Deploy — Vercel auto-detects Next.js
+
+Both services use HTTPS/WSS, so camera access and WebSocket connections work on all devices including iOS Safari.
+
+---
+
 ## Environment Variables
-
-Copy `.env.local.example` to `.env.local`:
-
-```bash
-cp .env.local.example .env.local
-```
 
 | Variable | Description |
 |---|---|
-| `NEXT_PUBLIC_SIGNALING_URL` | WebSocket URL of the signaling server (default: `ws://localhost:8080`) |
+| `NEXT_PUBLIC_SIGNALING_URL` | WebSocket URL of the signaling server. Leave empty for local dev (auto-detects). Set to `wss://your-server.onrender.com` for production. |
 
 ---
 

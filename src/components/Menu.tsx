@@ -2,30 +2,54 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { menu, categories, type MenuItem } from "@/data/menu";
+import type { MenuItem } from "@/data/locations/types";
+
+export interface MenuCategory {
+  id: string;
+  name: string;
+  emoji: string;
+}
 
 interface MenuProps {
   onOrder: (item: MenuItem) => void;
   isOpen: boolean;
   onClose: () => void;
+  items: MenuItem[];
+  categories: readonly MenuCategory[] | MenuCategory[];
+  locationName: string;
+  locationAddress: string;
+  locationPhone: string;
+  locationLogo: string;
+  accentColor?: string;
 }
 
-export default function Menu({ onOrder, isOpen, onClose }: MenuProps) {
-  const [activeCategory, setActiveCategory] = useState<string>("appetizers");
+export default function Menu({
+  onOrder,
+  isOpen,
+  onClose,
+  items,
+  categories,
+  locationName,
+  locationAddress,
+  locationPhone,
+  locationLogo,
+  accentColor = "var(--wah-red)",
+}: MenuProps) {
+  const [activeCategory, setActiveCategory] = useState<string>(categories[0]?.id || "appetizers");
 
   if (!isOpen) return null;
 
-  const filteredItems = menu.filter((item) => item.category === activeCategory);
+  const filteredItems = items.filter((item) => item.category === activeCategory);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="bg-[#1a1a1a] border-2 border-[var(--wah-gold)]/40 rounded-2xl w-[90%] max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl">
         {/* Menu header with logo */}
-        <div className="bg-[var(--wah-red)] px-6 py-5 flex items-center justify-between">
+        <div className="px-6 py-5 flex items-center justify-between" style={{ background: accentColor }}>
           <div className="flex items-center gap-4">
             <Image
-              src="/logo.png"
-              alt="Wah Ha Ha Thai Food"
+              src={locationLogo}
+              alt={locationName}
               width={150}
               height={50}
               className="object-contain"
@@ -33,8 +57,8 @@ export default function Menu({ onOrder, isOpen, onClose }: MenuProps) {
             <div className="h-10 w-px bg-white/20" />
             <div>
               <p className="text-sm text-white font-medium">MENU</p>
-              <p className="text-xs text-white/60">1902 SW 13th St, Gainesville, FL</p>
-              <p className="text-xs text-white/60">(352) 363-6327</p>
+              <p className="text-xs text-white/60">{locationAddress}</p>
+              <p className="text-xs text-white/60">{locationPhone}</p>
             </div>
           </div>
           <button
@@ -53,9 +77,10 @@ export default function Menu({ onOrder, isOpen, onClose }: MenuProps) {
               onClick={() => setActiveCategory(cat.id)}
               className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-colors ${
                 activeCategory === cat.id
-                  ? "bg-[var(--wah-red)] text-white"
+                  ? "text-white"
                   : "text-white/50 hover:text-white/80 hover:bg-white/5"
               }`}
+              style={activeCategory === cat.id ? { background: accentColor } : undefined}
             >
               {cat.emoji} {cat.name}
             </button>
