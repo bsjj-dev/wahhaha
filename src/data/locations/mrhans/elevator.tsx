@@ -18,6 +18,7 @@ const GLITCH_MESSAGES = [
 export default function Elevator({ onBack }: { onBack: () => void }) {
   const [phase, setPhase] = useState<Phase>("doors");
   const [flicker, setFlicker] = useState(false);
+  const [redFlash, setRedFlash] = useState(false);
   const [glitchText, setGlitchText] = useState("");
   const [showMessage, setShowMessage] = useState(false);
 
@@ -37,15 +38,29 @@ export default function Elevator({ onBack }: { onBack: () => void }) {
     }
   }, [phase]);
 
-  // Random flicker effect in the club
+  // Rapid flicker for ceiling lights going out
   useEffect(() => {
     if (phase !== "club") return;
     const interval = setInterval(() => {
-      if (Math.random() < 0.3) {
+      if (Math.random() < 0.45) {
         setFlicker(true);
-        setTimeout(() => setFlicker(false), 80 + Math.random() * 120);
+        setTimeout(() => setFlicker(false), 60 + Math.random() * 100);
       }
-    }, 2000 + Math.random() * 3000);
+    }, 800 + Math.random() * 2000);
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  // Red emergency light pulses — independent, slower
+  useEffect(() => {
+    if (phase !== "club") return;
+    const pulse = () => {
+      setRedFlash(true);
+      setTimeout(() => setRedFlash(false), 300 + Math.random() * 400);
+    };
+    pulse(); // flash immediately on entering
+    const interval = setInterval(() => {
+      pulse();
+    }, 1500 + Math.random() * 2500);
     return () => clearInterval(interval);
   }, [phase]);
 
@@ -56,8 +71,8 @@ export default function Elevator({ onBack }: { onBack: () => void }) {
       const msg = GLITCH_MESSAGES[Math.floor(Math.random() * GLITCH_MESSAGES.length)];
       setGlitchText(msg);
       setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 2500);
-    }, 5000 + Math.random() * 8000);
+      setTimeout(() => setShowMessage(false), 3000);
+    }, 4000 + Math.random() * 6000);
     return () => clearInterval(interval);
   }, [phase]);
 
@@ -164,46 +179,91 @@ export default function Elevator({ onBack }: { onBack: () => void }) {
       {phase === "club" && (
         <div className="absolute inset-0" style={{
           background: flicker
-            ? "radial-gradient(ellipse at 50% 30%, #1a0808 0%, #050202 100%)"
-            : "radial-gradient(ellipse at 50% 30%, #0d0505 0%, #020101 100%)",
-          transition: "background 0.1s",
+            ? "radial-gradient(ellipse at 50% 30%, #220a0a 0%, #080202 100%)"
+            : redFlash
+              ? "radial-gradient(ellipse at 50% 20%, #1a0404 0%, #060101 100%)"
+              : "radial-gradient(ellipse at 50% 30%, #0d0303 0%, #020101 100%)",
+          transition: "background 0.15s",
         }}>
-          {/* Remnant disco ball — barely catches light */}
-          <div className="absolute top-[5%] left-1/2 -translate-x-1/2">
-            <div
-              className="w-6 h-6 rounded-full"
-              style={{
-                background: "radial-gradient(circle, rgba(180,180,180,0.08) 0%, rgba(100,100,100,0.03) 100%)",
-                boxShadow: flicker ? "0 0 20px rgba(200,50,50,0.05)" : "none",
-              }}
-            />
-            <div className="w-[1px] h-4 bg-white/5 mx-auto -mt-4" />
+
+          {/* Red emergency light wash — the main flash effect */}
+          <div className="absolute inset-0 pointer-events-none z-10" style={{
+            background: "radial-gradient(ellipse at 50% 0%, rgba(200,0,0,0.18) 0%, transparent 60%)",
+            opacity: redFlash ? 1 : 0,
+            transition: "opacity 0.15s",
+          }} />
+          <div className="absolute inset-0 pointer-events-none z-10" style={{
+            background: "radial-gradient(ellipse at 20% 10%, rgba(200,0,0,0.12) 0%, transparent 40%)",
+            opacity: redFlash ? 1 : 0,
+            transition: "opacity 0.2s",
+          }} />
+          <div className="absolute inset-0 pointer-events-none z-10" style={{
+            background: "radial-gradient(ellipse at 80% 10%, rgba(200,0,0,0.12) 0%, transparent 40%)",
+            opacity: redFlash ? 1 : 0,
+            transition: "opacity 0.2s",
+          }} />
+
+          {/* Emergency light fixtures on ceiling */}
+          <div className="absolute top-0 left-[18%] flex flex-col items-center z-10">
+            <div className="w-8 h-2 rounded-b-sm" style={{
+              background: redFlash ? "rgba(255,30,30,0.9)" : "rgba(80,10,10,0.5)",
+              boxShadow: redFlash ? "0 0 18px 6px rgba(220,0,0,0.6), 0 0 40px 10px rgba(180,0,0,0.3)" : "none",
+              transition: "all 0.15s",
+            }} />
+          </div>
+          <div className="absolute top-0 right-[18%] flex flex-col items-center z-10">
+            <div className="w-8 h-2 rounded-b-sm" style={{
+              background: redFlash ? "rgba(255,30,30,0.9)" : "rgba(80,10,10,0.5)",
+              boxShadow: redFlash ? "0 0 18px 6px rgba(220,0,0,0.6), 0 0 40px 10px rgba(180,0,0,0.3)" : "none",
+              transition: "all 0.15s",
+            }} />
           </div>
 
-          {/* Scattered light reflections from disco ball when flickering */}
-          {flicker && (
+          {/* Remnant disco ball */}
+          <div className="absolute top-[5%] left-1/2 -translate-x-1/2 z-5">
+            <div
+              className="w-8 h-8 rounded-full"
+              style={{
+                background: "radial-gradient(circle, rgba(180,180,180,0.15) 0%, rgba(100,100,100,0.06) 100%)",
+                boxShadow: redFlash
+                  ? "0 0 30px rgba(200,50,50,0.3), 0 0 60px rgba(180,0,0,0.15)"
+                  : flicker ? "0 0 10px rgba(200,50,50,0.08)" : "none",
+                transition: "box-shadow 0.15s",
+              }}
+            />
+            <div className="w-[1px] h-5 bg-white/10 mx-auto -mt-5" />
+          </div>
+
+          {/* Scattered light reflections from disco ball */}
+          {(flicker || redFlash) && (
             <>
-              <div className="absolute top-[15%] left-[20%] w-1 h-1 rounded-full bg-white/10" />
-              <div className="absolute top-[25%] right-[30%] w-1 h-1 rounded-full bg-white/5" />
-              <div className="absolute top-[10%] right-[15%] w-1 h-1 rounded-full bg-[#ed0606]/5" />
+              <div className="absolute top-[15%] left-[20%] w-1.5 h-1.5 rounded-full" style={{ background: redFlash ? "rgba(255,60,60,0.5)" : "rgba(255,255,255,0.15)" }} />
+              <div className="absolute top-[25%] right-[30%] w-1 h-1 rounded-full" style={{ background: redFlash ? "rgba(255,60,60,0.4)" : "rgba(255,255,255,0.1)" }} />
+              <div className="absolute top-[10%] right-[15%] w-1.5 h-1.5 rounded-full" style={{ background: redFlash ? "rgba(255,60,60,0.5)" : "rgba(255,255,255,0.1)" }} />
+              <div className="absolute top-[35%] left-[40%] w-1 h-1 rounded-full" style={{ background: redFlash ? "rgba(255,60,60,0.3)" : "rgba(255,255,255,0.07)" }} />
             </>
           )}
 
-          {/* Dance floor — faded checkered pattern */}
+          {/* Dance floor — checkered pattern, more visible */}
           <div
             className="absolute bottom-0 left-0 right-0 h-[45%]"
             style={{
-              background: "linear-gradient(180deg, #080404 0%, #060303 100%)",
+              background: redFlash
+                ? "linear-gradient(180deg, #150404 0%, #0a0202 100%)"
+                : "linear-gradient(180deg, #080404 0%, #060303 100%)",
+              transition: "background 0.15s",
             }}
           >
             <div
-              className="absolute inset-0 opacity-[0.03]"
+              className="absolute inset-0"
               style={{
+                opacity: redFlash ? 0.12 : 0.05,
+                transition: "opacity 0.15s",
                 backgroundImage: `
-                  linear-gradient(45deg, rgba(200,50,50,0.5) 25%, transparent 25%),
-                  linear-gradient(-45deg, rgba(200,50,50,0.5) 25%, transparent 25%),
-                  linear-gradient(45deg, transparent 75%, rgba(200,50,50,0.5) 75%),
-                  linear-gradient(-45deg, transparent 75%, rgba(200,50,50,0.5) 75%)
+                  linear-gradient(45deg, rgba(200,50,50,0.8) 25%, transparent 25%),
+                  linear-gradient(-45deg, rgba(200,50,50,0.8) 25%, transparent 25%),
+                  linear-gradient(45deg, transparent 75%, rgba(200,50,50,0.8) 75%),
+                  linear-gradient(-45deg, transparent 75%, rgba(200,50,50,0.8) 75%)
                 `,
                 backgroundSize: "40px 40px",
                 backgroundPosition: "0 0, 0 20px, 20px -20px, -20px 0",
@@ -211,59 +271,60 @@ export default function Elevator({ onBack }: { onBack: () => void }) {
             />
           </div>
 
-          {/* Dance poles — matching the ones upstairs, but rusted */}
-          <div className="absolute top-[10%] bottom-[45%] left-[20%] w-[3px]" style={{
-            background: "linear-gradient(180deg, rgba(150,120,80,0.08), rgba(150,120,80,0.03), rgba(150,120,80,0.08))"
+          {/* Dance poles — rusted, catch red light */}
+          <div className="absolute top-[10%] bottom-[45%] left-[20%] w-[3px] z-5" style={{
+            background: redFlash
+              ? "linear-gradient(180deg, rgba(200,80,60,0.3), rgba(180,60,40,0.15), rgba(200,80,60,0.3))"
+              : "linear-gradient(180deg, rgba(150,120,80,0.1), rgba(150,120,80,0.04), rgba(150,120,80,0.1))",
+            transition: "background 0.15s",
           }} />
-          <div className="absolute top-[10%] bottom-[45%] right-[20%] w-[3px]" style={{
-            background: "linear-gradient(180deg, rgba(150,120,80,0.08), rgba(150,120,80,0.03), rgba(150,120,80,0.08))"
+          <div className="absolute top-[10%] bottom-[45%] right-[20%] w-[3px] z-5" style={{
+            background: redFlash
+              ? "linear-gradient(180deg, rgba(200,80,60,0.3), rgba(180,60,40,0.15), rgba(200,80,60,0.3))"
+              : "linear-gradient(180deg, rgba(150,120,80,0.1), rgba(150,120,80,0.04), rgba(150,120,80,0.1))",
+            transition: "background 0.15s",
           }} />
 
-          {/* Abandoned bar area — right side */}
-          <div className="absolute top-[30%] right-[5%] w-[80px] h-[25%]">
-            <div className="absolute inset-0 border border-white/[0.03] rounded-sm bg-black/50" />
-            {/* Empty bottles silhouette */}
+          {/* Abandoned bar area */}
+          <div className="absolute top-[30%] right-[5%] w-[80px] h-[25%] z-5">
+            <div className="absolute inset-0 border border-white/[0.04] rounded-sm bg-black/50" />
             <div className="absolute top-2 left-2 flex gap-1">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="w-1.5 rounded-t-sm bg-white/[0.03]" style={{ height: `${8 + i * 3}px` }} />
+                <div key={i} className="w-1.5 rounded-t-sm" style={{
+                  height: `${8 + i * 3}px`,
+                  background: redFlash ? "rgba(200,60,60,0.08)" : "rgba(255,255,255,0.04)",
+                }} />
               ))}
             </div>
           </div>
 
           {/* Overturned chair silhouettes */}
-          <div className="absolute bottom-[46%] left-[35%] w-6 h-4 border border-white/[0.02] -rotate-12" />
-          <div className="absolute bottom-[48%] right-[40%] w-5 h-3 border border-white/[0.02] rotate-[20deg]" />
+          <div className="absolute bottom-[46%] left-[35%] w-6 h-4 border border-white/[0.03] -rotate-12 z-5" />
+          <div className="absolute bottom-[48%] right-[40%] w-5 h-3 border border-white/[0.03] rotate-[20deg] z-5" />
 
-          {/* Faded "CLUB" text on wall — barely visible */}
-          <div className="absolute top-[20%] left-1/2 -translate-x-1/2">
+          {/* Faded "CLUB" text on wall */}
+          <div className="absolute top-[20%] left-1/2 -translate-x-1/2 z-5">
             <div
-              className="text-2xl font-bold tracking-[0.5em] opacity-[0.04]"
-              style={{ color: "#ed0606" }}
+              className="text-3xl font-bold tracking-[0.5em]"
+              style={{
+                color: "#ed0606",
+                opacity: redFlash ? 0.15 : 0.05,
+                transition: "opacity 0.15s",
+              }}
             >
               CLUB
             </div>
           </div>
 
-          {/* Mysterious residual energy — faint red pulse near edges */}
-          <div className="absolute top-[40%] left-0 w-[30%] h-[2px]" style={{
-            background: "linear-gradient(90deg, rgba(200,50,50,0.06), transparent)",
-            opacity: flicker ? 0.8 : 0.2,
-            transition: "opacity 0.3s",
-          }} />
-          <div className="absolute top-[60%] right-0 w-[20%] h-[2px]" style={{
-            background: "linear-gradient(-90deg, rgba(200,50,50,0.06), transparent)",
-            opacity: flicker ? 0.8 : 0.2,
-            transition: "opacity 0.3s",
-          }} />
-
           {/* Glitch message overlay */}
           {showMessage && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
               <div
-                className="text-[#ed0606]/30 text-xs font-mono tracking-wider px-4 text-center"
+                className="text-[#ff2020] text-lg font-mono tracking-wider px-6 text-center"
                 style={{
-                  textShadow: "0 0 10px rgba(237,6,6,0.2)",
+                  textShadow: "0 0 20px rgba(237,6,6,0.8), 0 0 40px rgba(237,6,6,0.4)",
                   animation: "glitch 0.3s infinite",
+                  opacity: 0.85,
                 }}
               >
                 {glitchText}
