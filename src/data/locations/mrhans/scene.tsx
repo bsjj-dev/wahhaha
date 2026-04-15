@@ -274,48 +274,46 @@ export default function MrHansScene({ participants, menuOpen, onOpenMenu }: Scen
         )}
       </div>
 
-      {/* Elevator — gold door on the left wall, away from the window */}
+      {/* Elevator — full-height gold door flush with the wall, meets the floor */}
       <button
         className="absolute cursor-pointer group z-[20]"
         style={{
           left: "3%",
-          top: "clamp(50px, 15%, 110px)",
-          width: "clamp(30px, 5vw, 48px)",
-          height: "clamp(52px, 9vw, 82px)",
-          background: "linear-gradient(180deg, #b8943a 0%, #c9a44a 18%, #e2c060 42%, #c9a44a 55%, #b08930 80%, #9a7820 100%)",
+          top: "clamp(40px, 14%, 110px)",   // aligns with ceiling bottom
+          bottom: "44%",                     // aligns with floor top (scene floor starts at 56%)
+          width: "clamp(50px, 8vw, 100px)",
+          background: "linear-gradient(180deg, #b8943a 0%, #c9a44a 12%, #d4b050 30%, #c9a44a 50%, #b08930 75%, #9a7820 100%)",
           border: "2px solid #c9a44a",
-          boxShadow: "0 0 12px rgba(201,164,74,0.18), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.3)",
+          borderBottom: "none",
+          boxShadow: "0 0 16px rgba(201,164,74,0.2), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.25)",
           transition: "filter 0.3s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.filter = "brightness(1.25)")}
+        onMouseEnter={e => (e.currentTarget.style.filter = "brightness(1.2)")}
         onMouseLeave={e => (e.currentTarget.style.filter = "brightness(1)")}
         onClick={() => setElevatorOpen(true)}
         title=""
       >
-        {/* Flickering floor indicator */}
-        <div className="absolute -top-5 left-1/2 -translate-x-1/2" style={{ width: "clamp(22px, 4vw, 36px)" }}>
+        {/* Flickering floor indicator above door */}
+        <div className="absolute left-1/2 -translate-x-1/2" style={{ top: "clamp(-22px, -3vw, -18px)", width: "clamp(28px, 5vw, 48px)" }}>
           <div style={{
             background: "#080604",
             border: "1px solid rgba(201,164,74,0.5)",
             borderRadius: "2px",
-            padding: "1px 0",
+            padding: "2px 0",
             color: arrowOn ? "#c9a44a" : "#1a1200",
-            fontSize: "clamp(8px, 1.4vw, 12px)",
+            fontSize: "clamp(9px, 1.6vw, 14px)",
             fontFamily: "monospace",
             fontWeight: "bold",
             textAlign: "center",
-            textShadow: arrowOn ? "0 0 6px rgba(201,164,74,0.9)" : "none",
+            textShadow: arrowOn ? "0 0 8px rgba(201,164,74,0.9)" : "none",
             transition: "color 0.04s, text-shadow 0.04s",
           }}>▲</div>
         </div>
-        {/* Two-panel door seam */}
-        <div className="absolute top-[4%] bottom-[4%] left-1/2 w-[1px]" style={{ background: "rgba(0,0,0,0.45)" }} />
-        {/* Horizontal panel rails */}
-        <div className="absolute left-0 right-0" style={{ top: "33%", height: "1px", background: "rgba(0,0,0,0.3)" }} />
-        <div className="absolute left-0 right-0" style={{ top: "66%", height: "1px", background: "rgba(0,0,0,0.3)" }} />
-        {/* Subtle gold sheen on hover */}
+        {/* Single vertical seam — the only detail on a real elevator door */}
+        <div className="absolute top-0 bottom-0 left-1/2 w-[2px]" style={{ background: "rgba(0,0,0,0.5)", transform: "translateX(-50%)" }} />
+        {/* Hover sheen */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{
-          background: "radial-gradient(ellipse at 50% 30%, rgba(255,230,150,0.15) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 30%, rgba(255,235,160,0.12) 0%, transparent 70%)",
         }} />
       </button>
     </div>
