@@ -42,18 +42,29 @@ function getSeatLayout(total: number): Array<[number, number, number]> {
 // the available room rather than using fixed pixels. This is what lets
 // 10 people actually fit on a phone in either orientation.
 function useViewportSize() {
-  const [size, setSize] = useState(() => ({
-    w: typeof window !== "undefined" ? window.innerWidth : 1024,
-    h: typeof window !== "undefined" ? window.innerHeight : 768,
-  }));
+  const getSize = () => ({
+    w: window.visualViewport?.width ?? window.innerWidth,
+    h: window.visualViewport?.height ?? window.innerHeight,
+  });
+
+  const [size, setSize] = useState(() =>
+    typeof window !== "undefined" ? getSize() : { w: 1024, h: 768 }
+  );
 
   useEffect(() => {
-    const update = () => setSize({ w: window.innerWidth, h: window.innerHeight });
+    const update = () => setSize(getSize());
+    // visualViewport fires on zoom + scroll offset changes — most reliable on mobile
+    window.visualViewport?.addEventListener("resize", update);
     window.addEventListener("resize", update);
-    window.addEventListener("orientationchange", update);
+    // orientationchange fires before the viewport has settled; wait for it to finish
+    const onOrient = () => setTimeout(update, 200);
+    window.addEventListener("orientationchange", onOrient);
+    // Also snap on first mount in case initial read was pre-settle
+    update();
     return () => {
+      window.visualViewport?.removeEventListener("resize", update);
       window.removeEventListener("resize", update);
-      window.removeEventListener("orientationchange", update);
+      window.removeEventListener("orientationchange", onOrient);
     };
   }, []);
 
