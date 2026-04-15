@@ -5,6 +5,8 @@ import Seat from "@/components/Seat";
 import Elevator from "./elevator";
 import type { SceneProps } from "../types";
 
+const ARTWORK = ["painting-left.jpg", "painting-center.jpg", "painting-right.jpg"];
+
 export default function MrHansScene({ participants, menuOpen, onOpenMenu }: SceneProps) {
   const totalSeats = Math.max(participants.length, 1);
   const [elevatorOpen, setElevatorOpen] = useState(false);
@@ -108,23 +110,25 @@ export default function MrHansScene({ participants, menuOpen, onOpenMenu }: Scen
           ].map((frame, i) => (
             <div key={i} className="absolute" style={{
               left: frame.left, top: frame.top, width: frame.width, height: frame.height,
-              border: "2px solid rgba(80,60,40,0.4)",
-              background: "rgba(180,160,120,0.15)",
-              boxShadow: "1px 1px 4px rgba(0,0,0,0.2)",
+              border: "2px solid rgba(80,60,40,0.6)",
+              boxShadow: "2px 2px 8px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(140,110,70,0.2)",
+              overflow: "hidden",
+              background: "rgba(160,140,100,0.2)",
             }}>
-              {/* Painting content — abstract mountain/bamboo silhouette */}
-              <div className="absolute inset-0 opacity-40" style={{
+              {/* Placeholder gradient — shown until real artwork loads */}
+              <div className="absolute inset-0 opacity-50" style={{
                 background: i % 2 === 0
                   ? "linear-gradient(180deg, rgba(120,160,140,0.3) 0%, rgba(80,120,100,0.2) 50%, rgba(60,40,20,0.1) 100%)"
                   : "linear-gradient(180deg, rgba(180,140,80,0.2) 0%, rgba(120,100,60,0.15) 100%)",
               }} />
-              {/* Fake brushstroke lines */}
-              <div className="absolute bottom-[15%] left-[30%] w-[2px] opacity-20" style={{
-                height: "60%", background: "#3a2a1a", transform: `rotate(${i * 3 - 3}deg)`,
-              }} />
-              <div className="absolute bottom-[15%] left-[50%] w-[1px] opacity-15" style={{
-                height: "45%", background: "#3a2a1a",
-              }} />
+              {/* Real artwork image — covers placeholder when file is present */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/artwork/${ARTWORK[i]}`}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = "0"; }}
+              />
             </div>
           ))}
 
@@ -274,21 +278,21 @@ export default function MrHansScene({ participants, menuOpen, onOpenMenu }: Scen
         )}
       </div>
 
-      {/* Elevator — full-height gold door flush with the wall, meets the floor */}
+      {/* Elevator — ~3/4 wall height gold door, shadowed, sits on the floor */}
       <button
         className="absolute cursor-pointer group z-[20]"
         style={{
           left: "3%",
-          top: "clamp(40px, 14%, 110px)",   // aligns with ceiling bottom
-          bottom: "44%",                     // aligns with floor top (scene floor starts at 56%)
+          bottom: "44%",                     // floor top (scene floor starts at 56%)
+          top: "clamp(70px, 24%, 200px)",    // ~3/4 wall height; wall spans 14%→56%
           width: "clamp(50px, 8vw, 100px)",
-          background: "linear-gradient(180deg, #b8943a 0%, #c9a44a 12%, #d4b050 30%, #c9a44a 50%, #b08930 75%, #9a7820 100%)",
-          border: "2px solid #c9a44a",
+          background: "linear-gradient(180deg, #3e2e0d 0%, #4a3812 12%, #554020 30%, #4a3812 50%, #342a0a 75%, #261f06 100%)",
+          border: "2px solid #5a4415",
           borderBottom: "none",
-          boxShadow: "0 0 16px rgba(201,164,74,0.2), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.25)",
+          boxShadow: "inset 2px 0 8px rgba(0,0,0,0.5), inset -2px 0 8px rgba(0,0,0,0.5), inset 0 -4px 12px rgba(0,0,0,0.4)",
           transition: "filter 0.3s",
         }}
-        onMouseEnter={e => (e.currentTarget.style.filter = "brightness(1.2)")}
+        onMouseEnter={e => (e.currentTarget.style.filter = "brightness(1.3)")}
         onMouseLeave={e => (e.currentTarget.style.filter = "brightness(1)")}
         onClick={() => setElevatorOpen(true)}
         title=""
@@ -307,7 +311,7 @@ export default function MrHansScene({ participants, menuOpen, onOpenMenu }: Scen
             textAlign: "center",
             textShadow: arrowOn ? "0 0 8px rgba(201,164,74,0.9)" : "none",
             transition: "color 0.04s, text-shadow 0.04s",
-          }}>▲</div>
+          }}>▼</div>
         </div>
         {/* Single vertical seam — the only detail on a real elevator door */}
         <div className="absolute top-0 bottom-0 left-1/2 w-[2px]" style={{ background: "rgba(0,0,0,0.5)", transform: "translateX(-50%)" }} />
