@@ -64,21 +64,22 @@ const ASPECT = 3 / 4; // video tile width:height
 
 function computeSeatSize(vw: number, vh: number, total: number) {
   // Height budget for the "people zone" between ceiling and table.
-  // Scene ceiling ≈ 14%, table overlap ≈ 38% → usable middle ≈ 48% of viewport.
   const peopleZoneH = Math.min(Math.max(vh * 0.5, 200), 430);
-
-  // Cap by available vertical space
   const wByHeight = peopleZoneH * ASPECT;
 
-  // Cap by available horizontal space.
-  // overlapFactor > 1 allows tiles to visually overlap (closer = more packed).
-  const overlap = 1.35;
+  // Overlap factor scales with crowd size so small groups don't collide.
+  // N≤2: slight separation, N≤4: flush, N≤6: mild overlap, N>6: dense packing.
+  const overlap =
+    total <= 2 ? 0.82
+    : total <= 4 ? 0.95
+    : total <= 6 ? 1.15
+    : 1.35;
+
   const wByWidth =
     total === 1
-      ? Math.min(vw * 0.55, 260)
+      ? Math.min(vw * 0.5, 240)
       : (vw * 0.92 / total) * overlap;
 
-  // Clamp so we always have a minimum-viable head size.
   const w = Math.max(64, Math.min(wByHeight, wByWidth, 260));
   const h = w / ASPECT;
   return { w: Math.round(w), h: Math.round(h) };
@@ -108,8 +109,18 @@ export default function Seat({
 
   // Viewport-aware base size; `depth` gives a subtle perspective variation.
   const base = computeSeatSize(vw, vh, totalSeats);
-  const videoW = Math.round(base.w * depth);
-  const videoH = Math.round(base.h * depth);
+
+  // Clamp height so the tile — and the name tag below it — never disappear
+  // under the table. Table is clamped to clamp(160px, 38%, 340px).
+  const tableH = Math.max(Math.min(vh * 0.38, 340), 160);
+  const tableTopPx = vh - tableH;
+  const seatTopPx = (topPct / 100) * vh;
+  // 32px = name tag height + breathing room
+  const maxH = Math.max(60, tableTopPx - seatTopPx - 32);
+
+  const rawH = Math.round(base.h * depth);
+  const videoH = Math.min(rawH, maxH);
+  const videoW = Math.round(videoH * ASPECT);
 
   // z-index: center seats (farther) behind side seats (closer)
   // Lower topPct = closer = higher z-index
