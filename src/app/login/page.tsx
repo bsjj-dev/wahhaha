@@ -84,17 +84,9 @@ export default function LoginPage() {
           priority
         />
 
-        <p className="text-[var(--wah-cream)]/60 text-sm mb-6">
-          Sunday night crew only.
-        </p>
-
         <Suspense fallback={<div className="h-24" />}>
           <LoginForm />
         </Suspense>
-
-        <p className="mt-8 text-[var(--wah-cream)]/20 text-xs">
-          If you know, you know.
-        </p>
       </div>
     </div>
   );
