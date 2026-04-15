@@ -471,11 +471,18 @@ export default function LocationRoom({ params }: { params: Promise<{ location: s
   }
 
   return (
-    <div className="flex relative overflow-hidden" style={{ height: "100dvh" }}>
+    <div
+      className="flex relative overflow-hidden"
+      style={{
+        height: "100dvh",
+        paddingLeft: "env(safe-area-inset-left)",
+        paddingRight: "env(safe-area-inset-right)",
+      }}
+    >
       {/* Main area - table */}
       <div className="flex-1 relative">
         {/* Room header */}
-        <div className="absolute left-4 z-10" style={{ top: "max(1rem, env(safe-area-inset-top))" }}>
+        <div className="absolute left-4 z-10" style={{ top: "max(0.75rem, env(safe-area-inset-top))" }}>
           <div className="text-xs font-semibold" style={{ color: locationConfig.theme.colors["--loc-primary"], opacity: 0.6 }}>
             {locationConfig.subtitle.toUpperCase()}
           </div>
@@ -515,16 +522,22 @@ export default function LocationRoom({ params }: { params: Promise<{ location: s
         )}
       </div>
 
-      {/* Chat sidebar */}
-      <div className="hidden md:block w-72 lg:w-80 shrink-0">
+      {/* Chat sidebar — shown only when viewport is both wide AND tall enough
+          (iPad+ in any orientation). Phone landscape is wide but short, so it
+          falls through to the FAB + drawer below. */}
+      <div className="chat-sidebar shrink-0 w-72 xl:w-80">
         <Chat messages={chatMessages} onSend={handleSendChat} currentUser={userName} />
       </div>
 
-      {/* Mobile chat toggle */}
+      {/* Floating chat toggle — phones + short-landscape phones */}
       <button
-        className="md:hidden absolute right-4 z-30 w-12 h-12 rounded-full bg-black/70 border border-white/10 flex items-center justify-center text-xl"
-        style={{ bottom: "calc(5rem + env(safe-area-inset-bottom))" }}
+        className="chat-fab absolute z-30 w-11 h-11 rounded-full bg-black/70 border border-white/10 flex items-center justify-center text-xl active:scale-95 transition-transform"
+        style={{
+          right: "max(1rem, env(safe-area-inset-right))",
+          bottom: "calc(4.5rem + env(safe-area-inset-bottom))",
+        }}
         onClick={() => setChatOpen((o) => !o)}
+        aria-label="Toggle chat"
       >
         💬
         {chatMessages.length > 0 && (
@@ -534,11 +547,11 @@ export default function LocationRoom({ params }: { params: Promise<{ location: s
         )}
       </button>
 
-      {/* Mobile chat drawer */}
+      {/* Mobile chat drawer — portrait: bottom sheet; landscape: right sheet */}
       {chatOpen && (
-        <div className="md:hidden absolute inset-0 z-40 flex flex-col">
+        <div className="chat-drawer absolute inset-0 z-40 flex portrait:flex-col landscape:flex-row">
           <div className="flex-1 bg-black/40" onClick={() => setChatOpen(false)} />
-          <div className="h-[60%] bg-[#1a1a1a]">
+          <div className="bg-[#1a1a1a] portrait:h-[65%] portrait:w-full landscape:w-[380px] landscape:max-w-[60vw] landscape:h-full">
             <Chat messages={chatMessages} onSend={handleSendChat} currentUser={userName} />
           </div>
         </div>

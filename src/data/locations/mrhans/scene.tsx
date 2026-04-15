@@ -18,10 +18,10 @@ export default function MrHansScene({ participants, menuOpen, onOpenMenu }: Scen
       {/* ====== LAYER 1: BACKGROUND ====== */}
       <div className="absolute inset-0">
 
-        {/* Black ceiling with tile grid */}
+        {/* Black ceiling with tile grid — clamped so short landscape viewports don't lose ceiling entirely, and tall viewports don't get an oversized ceiling */}
         <div
-          className="absolute top-0 left-0 right-0 h-[14%]"
-          style={{ background: "#0a0a0a" }}
+          className="absolute top-0 left-0 right-0"
+          style={{ height: "clamp(40px, 14%, 110px)", background: "#0a0a0a" }}
         >
           {/* Ceiling tile grid */}
           <div className="absolute inset-0 opacity-20" style={{
@@ -196,7 +196,7 @@ export default function MrHansScene({ participants, menuOpen, onOpenMenu }: Scen
       </div>
 
       {/* ====== LAYER 3: TABLE FOREGROUND — white tablecloth ====== */}
-      <div className="absolute bottom-0 left-0 right-0 z-[10] pointer-events-none" style={{ height: "38%" }}>
+      <div className="absolute bottom-0 left-0 right-0 z-[10] pointer-events-none" style={{ height: "clamp(160px, 38%, 340px)" }}>
         <div
           className="absolute inset-0"
           style={{
@@ -266,10 +266,10 @@ export default function MrHansScene({ participants, menuOpen, onOpenMenu }: Scen
       <button
         className="absolute cursor-pointer transition-all duration-500 hover:brightness-150 group z-[20]"
         style={{
-          right: "3%",
-          top: "15%",
-          width: "55px",
-          height: "90px",
+          right: "2%",
+          top: "clamp(50px, 15%, 110px)",
+          width: "clamp(32px, 6vw, 55px)",
+          height: "clamp(54px, 10vw, 90px)",
           background: "linear-gradient(180deg, #1a1515 0%, #151010 100%)",
           border: "1px solid rgba(100,80,60,0.2)",
         }}

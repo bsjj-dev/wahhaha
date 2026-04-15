@@ -79,3 +79,16 @@ body {
   80% { transform: translate(1px, 1px); }
   100% { transform: translate(0); }
 }
+
+/* ===== CHAT RESPONSIVE LAYOUT =====
+   Sidebar shows only when viewport is both wide AND tall enough
+   (iPad+ in any orientation, desktop). Phone landscape is wide but
+   short, so it falls back to the FAB + drawer. */
+.chat-sidebar { display: none; }
+.chat-fab { display: flex; }
+.chat-drawer { display: flex; }
+@media (min-width: 768px) and (min-height: 600px) {
+  .chat-sidebar { display: block; }
+  .chat-fab { display: none; }
+  .chat-drawer { display: none; }
+}

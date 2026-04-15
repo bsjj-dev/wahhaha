@@ -11,10 +11,10 @@ export default function WahHaHaScene({ participants, menuOpen, onOpenMenu }: Sce
     <div className="relative w-full h-full overflow-hidden">
       {/* ====== LAYER 1: BACKGROUND — Real Wah Ha Ha colors ====== */}
       <div className="absolute inset-0">
-        {/* Ceiling / dark top */}
+        {/* Ceiling / dark top — clamped so short landscape viewports don't lose the ceiling band */}
         <div
-          className="absolute top-0 left-0 right-0 h-[12%]"
-          style={{ background: "linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%)" }}
+          className="absolute top-0 left-0 right-0"
+          style={{ height: "clamp(36px, 12%, 100px)", background: "linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%)" }}
         />
         {/* Pendant lights */}
         <div className="absolute top-[3%] left-[25%] w-3 h-8 bg-gradient-to-b from-gray-600 to-gray-800 rounded-b-full" />
@@ -107,7 +107,7 @@ export default function WahHaHaScene({ participants, menuOpen, onOpenMenu }: Sce
       </div>
 
       {/* ====== LAYER 3: TABLE FOREGROUND ====== */}
-      <div className="absolute bottom-0 left-0 right-0 z-[10] pointer-events-none" style={{ height: "38%" }}>
+      <div className="absolute bottom-0 left-0 right-0 z-[10] pointer-events-none" style={{ height: "clamp(160px, 38%, 340px)" }}>
         <div
           className="absolute inset-0"
           style={{
