@@ -8,7 +8,7 @@ A virtual gathering space for the crew. Choose your restaurant, sit around the t
 
 ## Locations
 
-- **Wah Ha Ha Thai Food** — The back room round table. Lucas, Som, Nok, and Yu. K. Ang take your order.
+- **Wah Ha Ha Thai Food** — The roundtable. Lucas, Som, Nok, and Yu. K. Ang take your order.
 - **Mr. Han's Supper Club** — Fine dining since 1975. Alexander, Sherry, and David. Place your hand on the plaque to enter. (Find the elevator.)
 
 ---
@@ -17,10 +17,12 @@ A virtual gathering space for the crew. Choose your restaurant, sit around the t
 
 - **Together Mode video** — AI background removal (MediaPipe) composites you into the scene
 - **Real menus** — every item from both restaurants, organized by category with prices and spice levels
-- **Virtual staff** — take your order, check in, and serve it
-- **Table Talk chat** — sidebar chat alongside the video
-- **Up to 10 people** — WebRTC peer-to-peer
+- **Virtual staff** — take your order, check in, and serve it — with full personality
+- **Table Talk chat** — sidebar on tablet/desktop, drawer on mobile
+- **Up to 10 people** — WebRTC peer-to-peer, viewport-aware layout that actually fits on a phone
 - **Passphrase auth** — simple shared passphrase gate for the friend group
+- **Wall art** — real paintings on the Mr. Han's dining room walls
+- **Secrets** — look around
 
 ---
 
@@ -56,30 +58,6 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000).
 
 No `AUTH_PASSPHRASE` set = open access (dev mode).
-
----
-
-## Local Network (same Wi-Fi)
-
-Share your machine's local IP:
-
-```bash
-ipconfig getifaddr en0
-# e.g. 192.168.1.42
-```
-
-Friends go to `http://192.168.1.42:3000`. The signaling server auto-connects using the page's host.
-
-### iOS / camera over HTTPS
-
-iOS Safari requires HTTPS for camera access:
-
-```bash
-npx ngrok http 3000
-npx ngrok http 8080
-```
-
-Share the `https://` ngrok URL. Set `NEXT_PUBLIC_SIGNALING_URL` in `.env.local` to the ngrok WebSocket URL (`wss://...`).
 
 ---
 
@@ -166,10 +144,12 @@ render.yaml                     # Render deployment blueprint
 
 ---
 
-## The Crew
+## Dedications
 
-Built for the Sunday night regulars of **Wah Ha Ha Thai Food**
-1902 SW 13th St, Gainesville, FL · (352) 363-6327
+To the regular Gator boys of **Wah Ha Ha Thai Food**
 
 And for the occasional fine dining at **Mr. Han's Supper Club**
-6944 NW 10th Place, Gainesville, FL · (352) 331-6400
+
+---
+
+Special shoutout to **Yu** — the real host of the table, the reason any of this exists, and the standard every virtual staff member is trying to live up to. 🙏
